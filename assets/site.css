@@ -99,6 +99,7 @@ a {
 
 .top-nav a:hover,
 .top-nav a:focus-visible,
+.top-nav a[aria-current="page"],
 .button:hover,
 .button:focus-visible {
   border-color: var(--teal);
@@ -224,6 +225,14 @@ h2 {
   height: 100%;
   object-fit: cover;
   image-rendering: auto;
+}
+
+.workspace-card:hover .workspace-media img {
+  transform: scale(1.03);
+}
+
+.workspace-card .workspace-media img {
+  transition: transform 0.2s ease;
 }
 
 .workspace-symbol span {
