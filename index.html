@@ -3,16 +3,17 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>ピザッツ 管理トップ</title>
+  <title>ピザッツ | ネタ用ポータルサイト</title>
   <link rel="stylesheet" href="assets/site.css">
+  <script src="assets/site.js" defer></script>
 </head>
 <body>
   <header class="site-header">
-    <a class="brand" href="./" aria-label="ピザッツ 管理トップ">
+    <a class="brand" href="./" aria-label="ピザッツ">
       <span class="brand-mark" aria-hidden="true">P</span>
       <span>
         <span class="brand-title">ピザッツ</span>
-        <span class="brand-subtitle">管理トップ</span>
+        <span class="brand-subtitle">ネタ用ポータル</span>
       </span>
     </a>
     <nav class="top-nav" aria-label="サイト内メニュー">
@@ -22,56 +23,151 @@
     </nav>
   </header>
 
-  <main class="home-shell">
-    <section class="overview">
-      <div class="overview-copy">
-        <p class="eyebrow">NETA Site</p>
-        <h1>アーカイブを中心に、機能を分けて管理</h1>
-        <p class="lead">昔のホームページ一式はアーカイブにまとめ、クイズとチャットボットは別フォルダで育てます。</p>
+  <main class="portal-shell">
+    <aside class="portal-rail" aria-label="ポータルメニュー">
+      <div class="rail-title">
+        <span>ネタ用ポータルサイト</span>
+        <strong>過去画像アーカイブ</strong>
       </div>
-      <div class="overview-stats" aria-label="現在の構成">
-        <span><strong>Archive</strong>公開中</span>
-        <span><strong>Quiz</strong>公開中</span>
-        <span><strong>Chatbot</strong>公開中</span>
+      <nav class="rail-nav" aria-label="メインメニュー">
+        <a href="#gallery" aria-current="page">ギャラリー</a>
+        <a href="archive/">アーカイブ</a>
+        <a href="quiz/">クイズ</a>
+        <a href="chatbot/">チャット</a>
+      </nav>
+      <div class="rail-section">
+        <p>人気タグ</p>
+        <div class="tag-list" aria-label="人気タグ">
+          <button type="button" data-filter-chip="archive">画像</button>
+          <button type="button" data-filter-chip="quiz">クイズ</button>
+          <button type="button" data-filter-chip="chatbot">フーミン</button>
+          <button type="button" data-filter-chip="">すべて</button>
+        </div>
       </div>
-    </section>
+    </aside>
 
-    <section class="workspace-grid" aria-label="ワークスペース">
-      <article class="workspace-card archive-card">
-        <a class="workspace-media" href="archive/" aria-label="アーカイブを開く">
-          <img src="archive/なへ公園/data01.gif" alt="" loading="lazy">
-        </a>
-        <div class="workspace-body">
-          <p class="kicker">Archive</p>
-          <h2>アーカイブ</h2>
-          <p>HTML、画像、音声、テキストをまとめた保管エリア。</p>
-          <a class="button primary" href="archive/">開く</a>
+    <section class="portal-main" aria-label="ピザッツ">
+      <div class="portal-toolbar" aria-label="検索と表示">
+        <label class="portal-search">
+          <span>検索</span>
+          <input type="search" placeholder="キーワードで検索（例：清盛、フーミン、画像）" data-filter-input>
+        </label>
+        <div class="toolbar-actions">
+          <a class="icon-button text-icon" href="archive/">保存</a>
+          <button class="icon-button" type="button" data-theme-toggle aria-label="表示モード切替">☾</button>
         </div>
-      </article>
+      </div>
 
-      <article class="workspace-card quiz-card">
-        <a class="workspace-media" href="quiz/" aria-label="クイズを開く">
-          <img src="quiz/images/reward-photo.jpeg" alt="" loading="lazy">
-        </a>
-        <div class="workspace-body">
-          <p class="kicker">Quiz</p>
-          <h2>平清盛はさっ</h2>
-          <p>正解すると写真が見られるランダムクイズ。</p>
-          <a class="button" href="quiz/">開く</a>
+      <section id="gallery" class="gallery-panel" aria-label="最近追加">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">Gallery</p>
+            <h1>最近追加</h1>
+          </div>
+          <a class="button subtle" href="archive/">もっと見る</a>
         </div>
-      </article>
+        <div class="gallery-grid">
+          <a class="gallery-tile large" href="archive/なへ公園/" data-filter-target data-keywords="archive image gif なへ公園 画像">
+            <img src="archive/なへ公園/data01.gif" alt="なへ公園">
+            <span>なへ公園</span>
+          </a>
+          <a class="gallery-tile" href="archive/なへ公園/大沢修.jpg.view.generated.html" data-filter-target data-keywords="archive image 大沢修 画像">
+            <img src="archive/なへ公園/大沢修.jpg" alt="大沢修">
+            <span>大沢修</span>
+          </a>
+          <a class="gallery-tile" href="quiz/" data-filter-target data-keywords="quiz kiyomori 清盛 平清盛 クイズ">
+            <img src="quiz/images/reward-photo.jpeg" alt="平清盛クイズ">
+            <span>清盛クイズ</span>
+          </a>
+          <a class="gallery-tile" href="chatbot/" data-filter-target data-keywords="chatbot fumin フーミン チャット">
+            <img src="chatbot/avatars/fumin-01.jpeg" alt="フーミン">
+            <span>フーミン</span>
+          </a>
+          <a class="gallery-tile" href="archive/Home/激励/" data-filter-target data-keywords="archive image 激励 jpg 画像">
+            <img src="archive/Home/激励/untitled1004001.jpg" alt="激励">
+            <span>激励</span>
+          </a>
+          <a class="gallery-tile" href="quiz/" data-filter-target data-keywords="quiz osamu reward おさむ クイズ">
+            <img src="quiz/images/osamu-reward-1.jpeg" alt="クイズ報酬">
+            <span>Quiz</span>
+          </a>
+          <a class="gallery-tile" href="chatbot/" data-filter-target data-keywords="chatbot fumin avatar フーミン">
+            <img src="chatbot/avatars/fumin-04.jpeg" alt="フーミン">
+            <span>Chatbot</span>
+          </a>
+          <a class="gallery-tile" href="archive/なへ公園/zz035.jpg.view.generated.html" data-filter-target data-keywords="archive image zz035 画像">
+            <img src="archive/なへ公園/zz035.jpg" alt="zz035">
+            <span>Archive</span>
+          </a>
+        </div>
+      </section>
 
-      <article class="workspace-card chatbot-card">
-        <a class="workspace-media" href="chatbot/" aria-label="チャットボットを開く">
-          <img src="chatbot/avatars/fumin-01.jpeg" alt="" loading="lazy">
-        </a>
-        <div class="workspace-body">
-          <p class="kicker">Chatbot</p>
-          <h2>ワタスフーミン、</h2>
-          <p>質問にフーミンが一言返すチャットボット。</p>
-          <a class="button" href="chatbot/">開く</a>
-        </div>
-      </article>
+      <div class="portal-board">
+        <section class="workspace-grid" aria-label="ワークスペース">
+          <article class="workspace-card archive-card" data-filter-target data-keywords="archive image html gif jpg 画像 アーカイブ">
+            <a class="workspace-media" href="archive/" aria-label="アーカイブを開く">
+              <img src="archive/なへ公園/チョン！！.jpg" alt="" loading="lazy">
+            </a>
+            <div class="workspace-body">
+              <p class="kicker">Archive</p>
+              <h2>アーカイブ</h2>
+              <p>HTML、画像、音声、テキストの保管エリア。</p>
+              <a class="button primary" href="archive/">開く</a>
+            </div>
+          </article>
+
+          <article class="workspace-card quiz-card" data-filter-target data-keywords="quiz kiyomori 清盛 平清盛 クイズ">
+            <a class="workspace-media" href="quiz/" aria-label="クイズを開く">
+              <img src="quiz/images/osamu-reward-2.jpeg" alt="" loading="lazy">
+            </a>
+            <div class="workspace-body">
+              <p class="kicker">Quiz</p>
+              <h2>平清盛はさっ</h2>
+              <p>正解すると写真が見られるランダムクイズ。</p>
+              <a class="button" href="quiz/">開く</a>
+            </div>
+          </article>
+
+          <article class="workspace-card chatbot-card" data-filter-target data-keywords="chatbot fumin フーミン チャット">
+            <a class="workspace-media" href="chatbot/" aria-label="チャットボットを開く">
+              <img src="chatbot/avatars/fumin-02.jpeg" alt="" loading="lazy">
+            </a>
+            <div class="workspace-body">
+              <p class="kicker">Chatbot</p>
+              <h2>ワタスフーミン、</h2>
+              <p>フーミンが一言返すチャットボット。</p>
+              <a class="button" href="chatbot/">開く</a>
+            </div>
+          </article>
+        </section>
+
+        <aside class="side-stack" aria-label="補助情報">
+          <section class="mini-panel">
+            <div class="mini-heading">
+              <h2>タイムライン</h2>
+              <span>新しい順</span>
+            </div>
+            <ol class="timeline-list">
+              <li><span></span><strong>チャットボット</strong><em>フーミン仕様を正本化</em></li>
+              <li><span></span><strong>クイズ</strong><em>和風UIで統合</em></li>
+              <li><span></span><strong>アーカイブ</strong><em>旧サイト一式を保管</em></li>
+            </ol>
+          </section>
+
+          <section class="mini-panel">
+            <div class="mini-heading">
+              <h2>コレクション</h2>
+              <a href="archive/">すべて見る</a>
+            </div>
+            <div class="collection-strip">
+              <img src="archive/なへ公園/Kj.jpg" alt="" loading="lazy">
+              <img src="archive/なへ公園/hamasaki_ayumi_13.jpg" alt="" loading="lazy">
+              <img src="quiz/images/osamu-wrong-1.jpeg" alt="" loading="lazy">
+              <img src="chatbot/avatars/fumin-06.jpeg" alt="" loading="lazy">
+            </div>
+          </section>
+        </aside>
+      </div>
     </section>
   </main>
 </body>
