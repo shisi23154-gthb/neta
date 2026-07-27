@@ -1,6 +1,9 @@
 (() => {
   const CHAT_STORAGE_KEY = "watasu-fumin-chat-v1";
   const LEARNING_STORAGE_KEY = "watasu-fumin-learning-v1";
+  const OWNER_STORAGE_KEY = "watasu-fumin-owner-v1";
+  const BOT_DATA_URL = "data/watasu-fumin-data.json";
+  const LEARNING_API_URL = new URL("../api/learning", window.location.href).pathname;
 
   const AVATARS = [
     "avatars/fumin-01.jpeg",
@@ -12,7 +15,7 @@
     "avatars/fumin-07.jpeg",
   ];
 
-  const RULES = [
+  let RULES = [
     {
       keywords: ["死にたい", "自殺", "消えたい", "命を絶ちたい", "殺したい", "重い病気"],
       answer: "ワタスフーミン、ってね！",
@@ -101,10 +104,10 @@
     },
   ];
 
-  const FALLBACK_ANSWER =
+  let FALLBACK_ANSWER =
     "知りまへん、へん、尻まへん、イッツヒップ、ワタスのヒップはキューツ、";
-  const STARTUP_RESPONSES = RULES.map((rule) => rule.answer).concat(FALLBACK_ANSWER);
-  const REGISTERED_PHRASES = [
+  let STARTUP_RESPONSES = RULES.map((rule) => rule.answer).concat(FALLBACK_ANSWER);
+  let REGISTERED_PHRASES = [
     "ってね",
     "てねっ",
     "思ってませんのて",
@@ -114,6 +117,24 @@
     "ﾃﾈﾃﾈ",
     "さいほう、ふんれつ、はいき",
   ];
+  let GENERATOR_RULES = [];
+  let EXAMPLE_ANSWERS = new Map();
+  let TOPIC_EXTRACTION = {
+    removeLeadingWords: ["ねえ", "なあ", "あの", "フーミン", "教えて", "質問", "相談", "お願い", "ワタス", "私", "僕", "俺"],
+    removeTrailingWords: ["ですか", "ますか", "でしょうか", "なの", "なんです", "って何", "とは", "教えて", "どう思う", "どうしたら", "どうすれば"],
+    maxLength: 16,
+    emptyFallback: "アナタ",
+    removeDakuten: true,
+  };
+  let CORRECTION_APPEND_RULES = [
+    "フォーリンラフ、ってね！",
+    "ﾃﾈﾃﾈﾃﾈﾃﾈｯ!!!🫵🫵🫵🫵",
+    "思ってませんのて、",
+    "ってね！",
+    "イッツキューツ、",
+    "てねっ！",
+  ];
+  let SIMILARITY_THRESHOLD = 0.56;
 
   const messageList = document.querySelector("#message-list");
   const composer = document.querySelector("#composer");
@@ -132,10 +153,63 @@
   let messages = [];
   let learnedEntries = [];
   let thinking = false;
+  let learningBusy = false;
+  let learningApiAvailable = false;
   let correctionTarget = null;
+  let ownerToken = "";
 
   function createId() {
     return `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
+  }
+
+  function escapeRegExp(value) {
+    return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  }
+
+  function compactList(values) {
+    return [...new Set((values || []).filter(Boolean).map(String))];
+  }
+
+  function applyBotData(data) {
+    if (!data || !Array.isArray(data.rules) || !Array.isArray(data.generatorRules)) {
+      throw new Error("フーミン正本データを読み込めませんでした。");
+    }
+
+    RULES = data.rules.map((rule) => ({
+      keywords: rule.keywords || [],
+      answer: rule.answer,
+      safetyNote: rule.safetyNote || false,
+      priority: Number(rule.priority) || 0,
+    }));
+    FALLBACK_ANSWER =
+      data.fallbackAnswers?.[0] ||
+      "知りまへん、へん、尻まへん、イッツヒップ、ワタスのヒップはキューツ、";
+    STARTUP_RESPONSES = RULES.map((rule) => rule.answer).concat(FALLBACK_ANSWER);
+    GENERATOR_RULES = data.generatorRules;
+    EXAMPLE_ANSWERS = new Map(
+      (data.examples || []).map((example) => [
+        normalizeQuestion(example.user || ""),
+        example.assistant,
+      ]),
+    );
+    TOPIC_EXTRACTION = { ...TOPIC_EXTRACTION, ...(data.topicExtraction || {}) };
+    SIMILARITY_THRESHOLD = Number(data.learnedSimilarity?.threshold) || 0.56;
+    REGISTERED_PHRASES = compactList([
+      ...(data.catchphrases || []),
+      ...(data.registeredOriginalLines || []),
+      ...REGISTERED_PHRASES,
+    ]).map((phrase) => phrase.replace(/^〜/, ""));
+    CORRECTION_APPEND_RULES = (data.correctionCatchphraseRules || [])
+      .map((rule) => rule.append)
+      .filter(Boolean)
+      .concat(CORRECTION_APPEND_RULES)
+      .slice(0, 6);
+  }
+
+  async function loadBotData() {
+    const response = await fetch(BOT_DATA_URL, { cache: "no-store" });
+    if (!response.ok) throw new Error("フーミン正本データを読み込めませんでした。");
+    applyBotData(await response.json());
   }
 
   function normalizeQuestion(value) {
@@ -209,7 +283,7 @@
       if (!best || score > best.score) best = { entry, score };
     }
 
-    return best && best.score >= 0.56 ? best.entry.answer : null;
+    return best && best.score >= SIMILARITY_THRESHOLD ? best.entry.answer : null;
   }
 
   function findFixedAnswer(question) {
@@ -255,65 +329,47 @@
   }
 
   function extractTopic(question) {
-    const cleaned = question
+    const leadingWords = compactList(TOPIC_EXTRACTION.removeLeadingWords);
+    const trailingWords = compactList(TOPIC_EXTRACTION.removeTrailingWords);
+    const leadingPattern = leadingWords.length
+      ? new RegExp(`^(${leadingWords.map(escapeRegExp).join("|")})`)
+      : null;
+    const trailingPattern = trailingWords.length
+      ? new RegExp(`(${trailingWords.map(escapeRegExp).join("|")})$`, "g")
+      : null;
+    let cleaned = question
       .normalize("NFKC")
       .replace(/[!?！？。、，,.「」『』（）()[\]【】]/g, "")
-      .replace(/^(ねえ|なあ|あの|フーミン|教えて|質問|相談|お願い|ワタス|私|僕|俺)/, "")
-      .replace(
-        /(ですか|ますか|でしょうか|なの|なんです|って何|とは|教えて|どう思う|どうしたら|どうすれば)$/g,
-        "",
-      )
       .trim();
 
-    return removeDakuten(cleaned.slice(0, 16) || "アナタ");
+    if (leadingPattern) cleaned = cleaned.replace(leadingPattern, "");
+    if (trailingPattern) cleaned = cleaned.replace(trailingPattern, "");
+
+    const topic = cleaned.slice(0, TOPIC_EXTRACTION.maxLength || 16)
+      || TOPIC_EXTRACTION.emptyFallback
+      || "アナタ";
+    return TOPIC_EXTRACTION.removeDakuten === false ? topic : removeDakuten(topic);
   }
 
   function generateFuuminAnswer(question) {
     const normalized = normalizeQuestion(question);
+    const exampleAnswer = EXAMPLE_ANSWERS.get(normalized);
+    if (exampleAnswer) return exampleAnswer;
+
     const topic = extractTopic(question);
-    let choices;
+    const generatorRule =
+      GENERATOR_RULES.find((rule) => rule.id !== "general" && new RegExp(rule.pattern).test(normalized))
+      || GENERATOR_RULES.find((rule) => rule.id === "general");
+    const choices = generatorRule?.candidates || [
+      `${topic}、ミトコン、ミトコン、ってね！`,
+      `ワタスは${topic}、思ってませんのて、`,
+      `${topic}なんて、さいほう、ふんれつ、はいき、`,
+      `キャーアナタ、${topic}、てねてねてねてねっ！`,
+      `${topic}、フォーリンラフ、ラフ、ってね！`,
+    ];
 
-    if (/(なに|なん|何|とは)/.test(normalized)) {
-      choices = [
-        `ワタスは${topic}、ミトコン、ミトコン、ってね！`,
-        `${topic}なんて、さいほう、ふんれつ、はいき、思ってませんのて、`,
-        `キャーアナタ、${topic}、なに言ってるかわかりまへん、へん、ってね！`,
-      ];
-    } else if (/(どう|方法|やりかた|すれば|したら)/.test(normalized)) {
-      choices = [
-        `${topic}はさいほう、ふんれつ、はいき、ってね！`,
-        `ワタスは${topic}にフォーリンラフ、ってね！思ってませんのて、`,
-        `${topic}、ミトコン、ミトコン、思ってませんのて、`,
-      ];
-    } else if (/(なぜ|なんで|どうして|理由)/.test(normalized)) {
-      choices = [
-        `${topic}なんて、知りまへん、へん、ってね！`,
-        `ワタスフーミン、${topic}、思ってませんのて、`,
-        `${topic}、てねてねてねてねっ！`,
-      ];
-    } else if (/(いつ|とこ|どこ|場所|時間)/.test(normalized)) {
-      choices = [
-        `${topic}はミトコン、ミトコン、`,
-        `ワタスは${topic}、さいほう、さいほう、思ってませんのて、`,
-        `${topic}、てねっ！`,
-      ];
-    } else if (/(できる|して|ほしい|くれる|お願い)/.test(normalized)) {
-      choices = [
-        `${topic}しますのて、てねっ！`,
-        `キャーアナタ、${topic}、思ってませんのて、`,
-        `ワタスは${topic}、フォーリンラフ、ラフ、ってね！`,
-      ];
-    } else {
-      choices = [
-        `${topic}、ミトコン、ミトコン、ってね！`,
-        `ワタスは${topic}、思ってませんのて、`,
-        `${topic}なんて、さいほう、ふんれつ、はいき、`,
-        `キャーアナタ、${topic}、てねてねてねてねっ！`,
-        `${topic}、フォーリンラフ、ラフ、ってね！`,
-      ];
-    }
-
-    return choices[stringHash(normalized) % choices.length] || FALLBACK_ANSWER;
+    const selected = choices[stringHash(normalized) % choices.length] || FALLBACK_ANSWER;
+    return selected.replaceAll("{topic}", topic);
   }
 
   function chooseCatchphrase(question, answer) {
@@ -325,33 +381,33 @@
       normalizedQuestion.includes("好き") ||
       normalizedAnswer.includes("ラフ")
     ) {
-      return "フォーリンラフ、ってね！";
+      return CORRECTION_APPEND_RULES[0] || "フォーリンラフ、ってね！";
     }
     if (normalizedQuestion.includes("怒") || normalizedQuestion.includes("叱")) {
-      return "ﾃﾈﾃﾈﾃﾈﾃﾈｯ!!!🫵🫵🫵🫵";
+      return CORRECTION_APPEND_RULES[1] || "ﾃﾈﾃﾈﾃﾈﾃﾈｯ!!!🫵🫵🫵🫵";
     }
     if (
       normalizedAnswer.includes("まへん") ||
       normalizedAnswer.includes("嫌") ||
       normalizedAnswer.includes("ない")
     ) {
-      return "思ってませんのて、";
+      return CORRECTION_APPEND_RULES[2] || "思ってませんのて、";
     }
     if (
       normalizedQuestion.includes("仕事") ||
       normalizedAnswer.includes("さいほう") ||
       normalizedAnswer.includes("ミトコン")
     ) {
-      return "ってね！";
+      return CORRECTION_APPEND_RULES[3] || "ってね！";
     }
     if (
       normalizedQuestion.includes("かわいい") ||
       normalizedQuestion.includes("可愛い") ||
       normalizedQuestion.includes("寝顔")
     ) {
-      return "イッツキューツ、";
+      return CORRECTION_APPEND_RULES[4] || "イッツキューツ、";
     }
-    return "てねっ！";
+    return CORRECTION_APPEND_RULES[5] || "てねっ！";
   }
 
   function transformCorrection(question, value) {
@@ -401,6 +457,15 @@
     renderLearningCount();
   }
 
+  function getOwnerToken() {
+    let token = localStorage.getItem(OWNER_STORAGE_KEY) || "";
+    if (!token) {
+      token = `${createId()}-${createId()}`;
+      localStorage.setItem(OWNER_STORAGE_KEY, token);
+    }
+    return token;
+  }
+
   function normalizeStoredEntries(entries) {
     return entries
       .filter((entry) => entry && entry.question && entry.answer)
@@ -410,12 +475,69 @@
         normalized: entry.normalized || normalizeQuestion(String(entry.question)),
         answer: String(entry.answer).slice(0, 320),
         updatedAt: Number(entry.updatedAt) || Date.now(),
-        canManage: true,
+        canManage: entry.canManage !== undefined ? Boolean(entry.canManage) : true,
       }));
   }
 
   function renderLearningCount() {
-    managerButton.textContent = `記憶 ${learnedEntries.length}件`;
+    managerButton.textContent = `学習 ${learnedEntries.length}件`;
+  }
+
+  async function requestLearning(method, payload) {
+    const options = {
+      method,
+      headers: {
+        "Content-Type": "application/json",
+        "x-fumin-owner-token": ownerToken,
+      },
+      cache: "no-store",
+    };
+    if (payload !== undefined) options.body = JSON.stringify(payload);
+
+    const response = await fetch(LEARNING_API_URL, options);
+    let data = {};
+    try {
+      data = await response.json();
+    } catch {
+      data = {};
+    }
+    if (!response.ok) {
+      throw new Error(data.error || "共有学習を読み書きできませんでした。");
+    }
+    learningApiAvailable = true;
+    return data;
+  }
+
+  async function fetchSharedLearning() {
+    const data = await requestLearning("GET");
+    if (!Array.isArray(data.entries)) {
+      throw new Error("共有学習を読み込めませんでした。");
+    }
+    learnedEntries = normalizeStoredEntries(data.entries);
+    renderLearningCount();
+    return learnedEntries;
+  }
+
+  async function migrateLocalLearning(entries) {
+    if (!entries.length) return;
+    const responses = await Promise.all(
+      entries.map((entry) =>
+        requestLearning("POST", {
+          question: entry.question,
+          answer: entry.answer,
+        }),
+      ),
+    );
+    if (responses.length === entries.length) {
+      localStorage.removeItem(LEARNING_STORAGE_KEY);
+    }
+  }
+
+  function setLearningFallback(entries, message = "") {
+    learningApiAvailable = false;
+    learnedEntries = normalizeStoredEntries(entries);
+    renderLearningCount();
+    if (message) showLearningError(message);
   }
 
   function createBubble(message) {
@@ -437,8 +559,9 @@
     if (message.safetyNote) {
       const note = document.createElement("p");
       note.className = "safety-note";
-      note.textContent =
-        "深刻な悩みや体調の異変は、ひとりで抱え込まず、身近な人や専門家へ相談してください。";
+      note.textContent = typeof message.safetyNote === "string"
+        ? message.safetyNote
+        : "深刻な悩みや体調の異変は、ひとりで抱え込まず、身近な人や専門家へ相談してください。";
       stack.append(note);
     }
 
@@ -448,7 +571,7 @@
     time.textContent = formatTime(message.createdAt);
     meta.append(time);
 
-    if (message.role === "fumin" && message.question && !message.safetyNote) {
+    if (message.role === "fumin" && message.question) {
       const correctionButton = document.createElement("button");
       correctionButton.type = "button";
       correctionButton.className = "correction-button";
@@ -594,25 +717,44 @@
     saveLearning();
   }
 
-  function saveCorrection() {
+  async function saveCorrection() {
     if (!correctionTarget?.question) return;
     const answer = transformCorrection(correctionTarget.question, correctionAnswer.value);
     if (!answer) return;
 
-    upsertLearnedEntry(correctionTarget.question, answer);
+    learningBusy = true;
+    saveCorrectionButton.disabled = true;
+    showLearningError("");
+    try {
+      await requestLearning("POST", {
+        question: correctionTarget.question,
+        answer,
+      });
+      await fetchSharedLearning();
+    } catch (error) {
+      learningApiAvailable = false;
+      upsertLearnedEntry(correctionTarget.question, answer);
+      showLearningError(
+        error instanceof Error
+          ? `${error.message} この端末に保存しました。`
+          : "共有学習へ接続できないため、この端末に保存しました。",
+      );
+    }
+
     messages = messages.map((message) =>
       message.id === correctionTarget.id
         ? { ...message, text: answer, safetyNote: false }
         : message,
     );
     saveMessages();
-    showLearningError("");
     closeModals();
     renderMessages();
+    learningBusy = false;
+    saveCorrectionButton.disabled = !correctionAnswer.value.trim();
   }
 
   function clearConversation() {
-    if (!window.confirm("会話履歴だけを消しますか？ この端末の記憶は残ります。")) return;
+    if (!window.confirm("会話履歴だけを消しますか？ 学習内容は残ります。")) return;
     const opening = {
       id: createId(),
       role: "fumin",
@@ -627,20 +769,21 @@
 
   function renderManager() {
     learningList.replaceChildren();
+    const manageableEntries = learnedEntries.filter((entry) => entry.canManage);
 
-    if (learnedEntries.length === 0) {
+    if (manageableEntries.length === 0) {
       const empty = document.createElement("div");
       empty.className = "empty-learning";
       const title = document.createElement("strong");
-      title.textContent = "この端末にはまだ記憶がありません。";
+      title.textContent = "この端末からはまだ登録していません。";
       const body = document.createElement("p");
-      body.textContent = "回答修正しますんて、を押すとこの端末の記憶に追加されます。";
+      body.textContent = "回答修正しますんて、を押すとサイト全体の記憶に追加されます。";
       empty.append(title, body);
       learningList.append(empty);
       return;
     }
 
-    learnedEntries.forEach((entry) => {
+    manageableEntries.forEach((entry) => {
       const item = document.createElement("article");
       item.className = "learning-item";
 
@@ -666,12 +809,14 @@
       deleteButton.type = "button";
       deleteButton.className = "danger-button";
       deleteButton.textContent = "削除";
+      deleteButton.disabled = learningBusy;
       deleteButton.addEventListener("click", () => deleteLearnedEntry(entry.id));
 
       const saveButton = document.createElement("button");
       saveButton.type = "button";
       saveButton.className = "primary-button compact-button";
       saveButton.textContent = "保存";
+      saveButton.disabled = learningBusy;
       saveButton.addEventListener("click", () =>
         saveManagedEntry(entry.id, questionInput.value, answerInput.value),
       );
@@ -687,29 +832,69 @@
     managerModal.hidden = false;
   }
 
-  function saveManagedEntry(id, questionValue, answerValue) {
+  async function saveManagedEntry(id, questionValue, answerValue) {
     const question = questionValue.trim();
     const answer = transformCorrection(question, answerValue);
     if (!question || !answer) return;
 
-    learnedEntries = learnedEntries.filter((entry) => entry.id !== id);
-    upsertLearnedEntry(question, answer);
-    renderManager();
+    learningBusy = true;
     showLearningError("");
+    try {
+      await requestLearning("PUT", { id, question, answer });
+      await fetchSharedLearning();
+    } catch (error) {
+      learningApiAvailable = false;
+      learnedEntries = learnedEntries.filter((entry) => entry.id !== id);
+      upsertLearnedEntry(question, answer);
+      showLearningError(
+        error instanceof Error
+          ? `${error.message} この端末で更新しました。`
+          : "共有学習へ接続できないため、この端末で更新しました。",
+      );
+    } finally {
+      learningBusy = false;
+      renderManager();
+    }
   }
 
-  function deleteLearnedEntry(id) {
+  async function deleteLearnedEntry(id) {
     if (!window.confirm("この記憶を削除しますか？")) return;
-    learnedEntries = learnedEntries.filter((entry) => entry.id !== id);
-    saveLearning();
-    renderManager();
+    learningBusy = true;
+    showLearningError("");
+    try {
+      await requestLearning("DELETE", { id });
+      await fetchSharedLearning();
+    } catch (error) {
+      learningApiAvailable = false;
+      learnedEntries = learnedEntries.filter((entry) => entry.id !== id);
+      saveLearning();
+      showLearningError(
+        error instanceof Error
+          ? `${error.message} この端末の記憶を削除しました。`
+          : "共有学習へ接続できないため、この端末の記憶を削除しました。",
+      );
+    } finally {
+      learningBusy = false;
+      renderManager();
+    }
   }
 
-  function initialize() {
+  async function initialize() {
+    try {
+      await loadBotData();
+    } catch (error) {
+      showLearningError(
+        error instanceof Error
+          ? error.message
+          : "フーミン正本データを読み込めませんでした。",
+      );
+    }
+
     messages = readJson(CHAT_STORAGE_KEY, []).filter(
       (message) => message && message.role && message.text,
     );
-    learnedEntries = normalizeStoredEntries(readJson(LEARNING_STORAGE_KEY, []));
+    const storedLearning = normalizeStoredEntries(readJson(LEARNING_STORAGE_KEY, []));
+    ownerToken = getOwnerToken();
 
     const opening = {
       id: createId(),
@@ -721,9 +906,21 @@
     messages.push(opening);
 
     saveMessages();
-    saveLearning();
+    setLearningFallback(storedLearning);
     renderMessages();
-    showLearningError("");
+
+    try {
+      await migrateLocalLearning(storedLearning);
+      await fetchSharedLearning();
+      showLearningError("");
+    } catch {
+      setLearningFallback(
+        storedLearning,
+        storedLearning.length
+          ? "共有学習へ接続できないため、この端末の記憶を使っています。"
+          : "",
+      );
+    }
   }
 
   composer.addEventListener("submit", submitQuestion);

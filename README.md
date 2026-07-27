@@ -6,4 +6,4 @@ personal HTML archive
 
 - `archive/`: archived HTML site files
 - `quiz/`: Kiyomori random quiz
-- `chatbot/`: Watasu Fumin static chatbot
+- `chatbot/`: Watasu Fumin chatbot with canonical data/spec files
