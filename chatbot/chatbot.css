@@ -575,10 +575,65 @@
 }
 
 @media (max-width: 640px) {
+  .chatbot-feature-page {
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr);
+    height: 100svh;
+    min-height: 100svh;
+    overflow: hidden;
+  }
+
+  .chatbot-feature-page .site-header {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.4rem 0.5rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .chatbot-feature-page .brand {
+    min-width: 0;
+    flex: 1 1 auto;
+    gap: 0.45rem;
+  }
+
+  .chatbot-feature-page .brand-mark {
+    width: 2rem;
+    height: 2rem;
+    flex: 0 0 2rem;
+  }
+
+  .chatbot-feature-page .brand-title {
+    font-size: 0.9rem;
+    line-height: 1.1;
+  }
+
+  .chatbot-feature-page .brand-subtitle {
+    display: none;
+  }
+
+  .chatbot-feature-page .top-nav {
+    flex: 0 0 auto;
+    flex-wrap: nowrap;
+    justify-content: flex-end;
+    gap: 0.25rem;
+  }
+
+  .chatbot-feature-page .top-nav a {
+    min-height: 2rem;
+    padding: 0.28rem 0.45rem;
+    font-size: 0.76rem;
+    line-height: 1;
+    white-space: nowrap;
+  }
+
   .fumin-site-shell {
     width: 100%;
     max-width: 100%;
-    display: block;
+    min-height: 0;
+    height: 100%;
+    display: grid;
     padding: 0;
     overflow: hidden;
   }
@@ -586,8 +641,8 @@
   .chat-app {
     width: 100%;
     max-width: 100%;
-    height: calc(100svh - 6.2rem);
-    min-height: 560px;
+    height: 100%;
+    min-height: 0;
     border-right: 0;
     border-left: 0;
     border-radius: 0;
@@ -682,6 +737,15 @@
 
   .modal-heading h2 {
     font-size: 1.3rem;
+  }
+}
+
+@supports (height: 100dvh) {
+  @media (max-width: 640px) {
+    .chatbot-feature-page {
+      height: 100dvh;
+      min-height: 100dvh;
+    }
   }
 }
 
