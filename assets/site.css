@@ -1,3 +1,5 @@
+@import url("https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;500;700;900&display=swap");
+
 :root {
   color-scheme: light;
   --bg: #f4f6f8;
@@ -78,12 +80,11 @@ body {
   min-height: 100vh;
   color: var(--text);
   background: var(--bg);
-  font-family: "Noto Sans JP", "Aptos", "Segoe UI Variable Text", "Yu Gothic UI", "Hiragino Sans", "Meiryo", sans-serif;
+  font-family: "Zen Kaku Gothic New", "Noto Sans JP", "Segoe UI Variable Text", "Yu Gothic UI", "Hiragino Sans", "Meiryo", sans-serif;
   line-height: 1.62;
   overflow-wrap: anywhere;
 }
 
-body,
 button,
 input {
   font: inherit;
@@ -550,7 +551,7 @@ p {
     linear-gradient(rgba(247, 240, 223, 0.88), rgba(247, 240, 223, 0.88)),
     repeating-linear-gradient(0deg, #f4ecd9 0 3px, #eee1c6 4px 5px);
   color: #241b16;
-  font-family: "Hiragino Mincho ProN", "Yu Mincho", "Noto Serif JP", serif;
+  font-family: "Zen Kaku Gothic New", "Noto Sans JP", "Yu Gothic UI", "Hiragino Sans", "Meiryo", sans-serif;
 }
 
 .quiz-preview img {
@@ -600,7 +601,7 @@ p {
   border-radius: 999px;
   background: #241b16;
   color: #fff6de;
-  font-family: system-ui, sans-serif;
+  font-family: "Zen Kaku Gothic New", "Noto Sans JP", system-ui, sans-serif;
   font-weight: 900;
 }
 

@@ -1,3 +1,5 @@
+@import url("https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;500;700;900&display=swap");
+
 .quiz-feature-page {
   --quiz-ink: #241b16;
   --quiz-muted: #75665b;
@@ -29,7 +31,7 @@
   background:
     radial-gradient(circle at 50% 0, rgba(223, 184, 111, 0.2), transparent 34rem),
     linear-gradient(145deg, #1d1513, #3c2822);
-  font-family: "Hiragino Mincho ProN", "Yu Mincho", "Noto Serif JP", serif;
+  font-family: "Zen Kaku Gothic New", "Noto Sans JP", "Yu Gothic UI", "Hiragino Sans", "Meiryo", sans-serif;
 }
 
 .paper-grain {
@@ -198,8 +200,9 @@
   border-radius: 50%;
   background: var(--quiz-ink);
   color: #fff8e8;
-  font-family: Georgia, serif;
+  font-family: "Zen Kaku Gothic New", "Noto Sans JP", system-ui, sans-serif;
   font-size: 1.18rem;
+  font-weight: 900;
 }
 
 .choice-text {
