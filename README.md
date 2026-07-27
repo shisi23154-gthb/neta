@@ -6,4 +6,4 @@ personal HTML archive
 
 - `archive/`: archived HTML site files
 - `quiz/`: quiz workspace
-- `chatbot/`: chatbot workspace
+- `chatbot/`: Watasu Fumin static chatbot
