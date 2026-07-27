@@ -1,0 +1,7 @@
+*.bak
+*.bak.view.generated.html
+*.eml
+*.eml.view.generated.html
+Thumbs.db
+Thumbs.db.view.generated.html
+Desktop.ini
