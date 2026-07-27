@@ -8,9 +8,13 @@
   --quiz-green: #2f684c;
 }
 
+.quiz-feature-page .brand-mark {
+  background: var(--quiz-vermilion);
+}
+
 .quiz-feature-page .top-nav a[aria-current="page"] {
-  border-color: var(--teal);
-  color: var(--teal);
+  border-color: var(--quiz-vermilion);
+  color: var(--quiz-vermilion);
 }
 
 .quiz-shell {

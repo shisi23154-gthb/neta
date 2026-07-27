@@ -12,9 +12,13 @@
   background: #edf2ef;
 }
 
+.chatbot-feature-page .brand-mark {
+  background: var(--fumin-header);
+}
+
 .chatbot-feature-page .top-nav a[aria-current="page"] {
-  border-color: var(--teal);
-  color: var(--teal);
+  border-color: var(--fumin-header);
+  color: var(--fumin-header);
 }
 
 .fumin-site-shell {
