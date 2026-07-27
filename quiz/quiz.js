@@ -94,6 +94,7 @@
 
   const crest = document.querySelector("#quiz-crest");
   const prompt = document.querySelector("#quiz-prompt");
+  const quizCard = document.querySelector("#quiz-card");
   const choiceList = document.querySelector("#choice-list");
   const resultPanel = document.querySelector("#result-panel");
   const resultLabel = document.querySelector("#result-label");
@@ -102,12 +103,17 @@
   const resultImages = document.querySelector("#result-images");
   const randomButton = document.querySelector("#random-question");
   const retryButton = document.querySelector("#retry-question");
+  const nextButton = document.querySelector("#next-question");
 
   let activeQuestion = 0;
   let answered = false;
 
   function randomQuestionIndex() {
     return Math.floor(Math.random() * QUESTIONS.length);
+  }
+
+  function nextQuestionIndex() {
+    return (activeQuestion + 1) % QUESTIONS.length;
   }
 
   function setQuestion(index = randomQuestionIndex()) {
@@ -117,6 +123,7 @@
     const question = QUESTIONS[activeQuestion];
     crest.textContent = question.crest;
     prompt.textContent = question.prompt;
+    quizCard.hidden = false;
     resultPanel.hidden = true;
     resultImages.replaceChildren();
     choiceList.replaceChildren();
@@ -125,7 +132,12 @@
       const button = document.createElement("button");
       button.className = "choice-button";
       button.type = "button";
-      button.textContent = choice;
+      button.innerHTML = `
+        <span class="choice-number">${choiceIndex + 1}</span>
+        <span class="choice-text"></span>
+        <span class="choice-mark" aria-hidden="true">›</span>
+      `;
+      button.querySelector(".choice-text").textContent = choice;
       button.addEventListener("click", () => answerQuestion(choiceIndex));
       choiceList.append(button);
     });
@@ -145,9 +157,12 @@
       button.disabled = true;
       if (index === question.correctIndex) button.classList.add("is-correct");
       if (index === choiceIndex && !isCorrect) button.classList.add("is-wrong");
+      const mark = button.querySelector(".choice-mark");
+      if (index === question.correctIndex) mark.textContent = "✓";
+      if (index === choiceIndex && !isCorrect) mark.textContent = "×";
     });
 
-    resultLabel.textContent = isCorrect ? "Correct" : "Miss";
+    resultLabel.textContent = isCorrect ? "お見事！" : "残念！";
     resultPanel.classList.toggle("is-correct", isCorrect);
     resultPanel.classList.toggle("is-wrong", !isCorrect);
     resultTitle.textContent = result.title;
@@ -155,6 +170,7 @@
     resultImages.replaceChildren();
 
     const images = isCorrect ? result.images : [{ src: result.image, alt: result.alt }];
+    resultImages.classList.toggle("has-gallery", images.length > 1);
     images.forEach((image) => {
       const img = document.createElement("img");
       img.src = image.src;
@@ -162,12 +178,14 @@
       resultImages.append(img);
     });
 
+    quizCard.hidden = true;
     resultPanel.hidden = false;
     resultPanel.scrollIntoView({ behavior: "smooth", block: "nearest" });
   }
 
-  randomButton.addEventListener("click", () => setQuestion());
+  randomButton.addEventListener("click", () => setQuestion(nextQuestionIndex()));
   retryButton.addEventListener("click", () => setQuestion(activeQuestion));
+  nextButton.addEventListener("click", () => setQuestion(nextQuestionIndex()));
 
   setQuestion();
 })();

@@ -24,22 +24,19 @@
   </header>
 
   <main class="quiz-shell">
-    <section class="quiz-stage" aria-labelledby="quiz-title">
-      <div class="quiz-copy">
-        <p class="eyebrow">Kiyomori Quiz</p>
-        <h1 id="quiz-title">平清盛はさっ</h1>
-        <p class="lead">正解すると写真が見られるランダムクイズ。2問のうち1問が出ます。</p>
-      </div>
-
+    <div class="paper-grain" aria-hidden="true"></div>
+    <section class="quiz-stage" aria-labelledby="quiz-prompt">
       <article class="quiz-card" id="quiz-card">
-        <div class="quiz-card-head">
-          <span id="quiz-crest" class="quiz-crest" aria-hidden="true">平</span>
-          <div>
-            <p class="kicker">Question</p>
-            <h2 id="quiz-prompt">平清盛はさっ、</h2>
-          </div>
+        <span id="quiz-crest" class="quiz-crest" aria-hidden="true">平</span>
+        <p class="eyebrow">ランダム出題・全2問</p>
+        <div class="quiz-rule" aria-hidden="true">
+          <span></span>
+          <b>問</b>
+          <span></span>
         </div>
+        <h1 id="quiz-prompt">平清盛はさっ、</h1>
         <div id="choice-list" class="choice-list" aria-label="回答選択肢"></div>
+        <p class="quiz-hint">正しいと思う答えをタップ</p>
         <div class="quiz-tools">
           <button id="random-question" class="button" type="button">別の問題</button>
         </div>
@@ -53,10 +50,12 @@
         </div>
         <div id="result-images" class="result-images"></div>
         <div class="result-actions">
-          <button id="retry-question" class="button" type="button">もう一回</button>
+          <button id="retry-question" class="button" type="button">もう一度！</button>
+          <button id="next-question" class="button next-question-button" type="button">次の問題へ</button>
         </div>
       </section>
     </section>
+    <footer class="quiz-footer">KIYOMORI QUIZ · TWO QUESTIONS</footer>
   </main>
 
   <script src="quiz.js" defer></script>
