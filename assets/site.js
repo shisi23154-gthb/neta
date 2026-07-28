@@ -51,4 +51,17 @@
       applyFilter(value);
     });
   });
+
+  const randomItems = [...document.querySelectorAll("[data-random-item]")];
+
+  document.querySelectorAll("[data-random-open]").forEach((button) => {
+    button.addEventListener("click", () => {
+      const visibleItems = randomItems.filter((item) => !item.hidden && item.href);
+      const pool = visibleItems.length > 0 ? visibleItems : randomItems.filter((item) => item.href);
+      const nextItem = pool[Math.floor(Math.random() * pool.length)];
+      if (nextItem) {
+        window.location.href = nextItem.href;
+      }
+    });
+  });
 })();

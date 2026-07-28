@@ -427,6 +427,13 @@ p {
   margin-bottom: 0.85rem;
 }
 
+.section-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.4rem;
+}
+
 .gallery-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -953,6 +960,20 @@ p {
     grid-template-columns: 1fr;
     gap: 0.2rem;
     padding: 0.5rem 0.65rem;
+  }
+
+  .section-heading {
+    display: grid;
+    grid-template-columns: 1fr;
+    align-items: start;
+  }
+
+  .section-actions {
+    justify-content: stretch;
+  }
+
+  .section-actions .button {
+    flex: 1 1 9rem;
   }
 
   .gallery-grid {
