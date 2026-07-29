@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;500;700;900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@500;600;700;900&display=swap");
 
 .quiz-feature-page {
   --quiz-ink: #241b16;
@@ -8,6 +8,9 @@
   --quiz-vermilion: #b43b2f;
   --quiz-gold: #c99a44;
   --quiz-green: #2f684c;
+  --quiz-serif: "Noto Serif JP", "Yu Mincho", YuMincho, "Hiragino Mincho ProN", "Hiragino Mincho Pro", "MS PMincho", "MS Mincho", serif;
+  font-family: var(--quiz-serif);
+  font-feature-settings: "palt" 1;
 }
 
 .quiz-feature-page .brand-mark {
@@ -31,7 +34,7 @@
   background:
     radial-gradient(circle at 50% 0, rgba(223, 184, 111, 0.2), transparent 34rem),
     linear-gradient(145deg, #1d1513, #3c2822);
-  font-family: "Zen Kaku Gothic New", "Noto Sans JP", "Yu Gothic UI", "Hiragino Sans", "Meiryo", sans-serif;
+  font-family: var(--quiz-serif);
 }
 
 .paper-grain {
@@ -106,7 +109,7 @@
   margin: 0.55rem 0 0.6rem;
   color: var(--quiz-vermilion);
   text-align: center;
-  font-family: system-ui, sans-serif;
+  font-family: var(--quiz-serif);
   font-size: 0.75rem;
   font-weight: 900;
   letter-spacing: 0;
@@ -200,7 +203,7 @@
   border-radius: 50%;
   background: var(--quiz-ink);
   color: #fff8e8;
-  font-family: "Zen Kaku Gothic New", "Noto Sans JP", system-ui, sans-serif;
+  font-family: var(--quiz-serif);
   font-size: 1.18rem;
   font-weight: 900;
 }
@@ -212,7 +215,7 @@
 .choice-mark {
   color: #9d876f;
   text-align: center;
-  font-family: system-ui, sans-serif;
+  font-family: var(--quiz-serif);
   font-size: 1.55rem;
 }
 
@@ -249,7 +252,7 @@
   margin: 1rem 0 0;
   color: var(--quiz-muted);
   text-align: center;
-  font-family: system-ui, sans-serif;
+  font-family: var(--quiz-serif);
   font-size: 0.75rem;
   font-weight: 700;
 }
@@ -269,7 +272,7 @@
   border-radius: 999px;
   background: var(--quiz-vermilion);
   color: #ffffff;
-  font-family: system-ui, sans-serif;
+  font-family: var(--quiz-serif);
   font-size: 0.9rem;
   font-weight: 900;
 }
@@ -315,7 +318,7 @@
   border-radius: 50%;
   background: var(--quiz-vermilion);
   color: #ffffff;
-  font-family: system-ui, sans-serif;
+  font-family: var(--quiz-serif);
   font-size: 0.95rem;
   font-weight: 900;
   transform: rotate(8deg);
@@ -345,7 +348,7 @@
 .result-panel p {
   margin: 0.55rem 0 0;
   color: var(--quiz-muted);
-  font-family: system-ui, sans-serif;
+  font-family: var(--quiz-serif);
   font-size: 0.88rem;
   font-weight: 700;
 }
@@ -391,7 +394,7 @@
   padding-top: 1.1rem;
   color: rgba(255, 244, 223, 0.5);
   text-align: center;
-  font-family: system-ui, sans-serif;
+  font-family: var(--quiz-serif);
   font-size: 0.6rem;
   font-weight: 800;
   letter-spacing: 0;
