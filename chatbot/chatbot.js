@@ -135,6 +135,7 @@
     "てねっ！",
   ];
   let SIMILARITY_THRESHOLD = 0.56;
+  const CONVERSATION_SIMILARITY_THRESHOLD = 0.72;
 
   const messageList = document.querySelector("#message-list");
   const composer = document.querySelector("#composer");
@@ -284,6 +285,32 @@
     }
 
     return best && best.score >= SIMILARITY_THRESHOLD ? best.entry.answer : null;
+  }
+
+  function findConversationAnswer(question, history) {
+    const normalized = normalizeQuestion(question);
+    let best = null;
+
+    for (let index = history.length - 1; index >= 0; index -= 1) {
+      const message = history[index];
+      if (
+        message.role !== "fumin"
+        || !message.question
+        || message.safetyNote
+        || !message.text
+      ) {
+        continue;
+      }
+
+      const score = similarityScore(normalized, normalizeQuestion(message.question));
+      if (!best || score > best.score) {
+        best = { answer: message.text, score };
+      }
+    }
+
+    return best && best.score >= CONVERSATION_SIMILARITY_THRESHOLD
+      ? best.answer
+      : null;
   }
 
   function findFixedAnswer(question) {
@@ -655,11 +682,12 @@
 
     window.setTimeout(() => {
       const learnedAnswer = findLearnedAnswer(question, learnedEntries);
+      const conversationAnswer = findConversationAnswer(question, messages);
       const fixed = findFixedAnswer(question);
       const generatedAnswer = generateFuuminAnswer(question);
       const finalAnswer = fixed.safetyNote
         ? fixed.answer
-        : learnedAnswer || fixed.answer || generatedAnswer;
+        : learnedAnswer || conversationAnswer || fixed.answer || generatedAnswer;
       const reply = {
         id: createId(),
         role: "fumin",
