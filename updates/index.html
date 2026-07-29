@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <script src="../assets/access-gate.js?v=20260729-eye"></script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>更新履歴 | ピザッツ</title>
+  <link rel="stylesheet" href="../assets/site.css?v=20260729-updates">
+  <script src="../assets/site.js?v=20260728-random" defer></script>
+</head>
+<body class="workspace-page updates-page">
+  <header class="site-header">
+    <a class="brand" href="../" aria-label="ピザッツ 管理トップ">
+      <span class="brand-mark" aria-hidden="true">P</span>
+      <span>
+        <span class="brand-title">ピザッツ</span>
+        <span class="brand-subtitle">更新履歴</span>
+      </span>
+    </a>
+    <nav class="top-nav" aria-label="サイト内メニュー">
+      <a href="../archive/">Archive</a>
+      <a href="../quiz/">Quiz</a>
+      <a href="../chatbot/">Chatbot</a>
+      <a href="./" aria-current="page">Updates</a>
+    </nav>
+  </header>
+
+  <main class="updates-shell">
+    <section class="updates-hero" aria-labelledby="updates-title">
+      <div>
+        <p class="eyebrow">Updates</p>
+        <h1 id="updates-title">アップデート履歴</h1>
+        <p>NETAサイトに加えた変更を日付順で残します。</p>
+      </div>
+      <div class="toolbar-actions">
+        <a class="button subtle" href="../">トップへ戻る</a>
+        <button class="icon-button" type="button" data-theme-toggle aria-label="表示モード切替">☾</button>
+      </div>
+    </section>
+
+    <div class="updates-layout">
+      <section class="update-list" aria-label="更新履歴一覧">
+        <article class="update-entry">
+          <div class="update-date">
+            <time datetime="2026-07-29">2026.07.29</time>
+            <span>Access / History</span>
+          </div>
+          <div class="update-body">
+            <h2>アクセス制限と更新履歴を整備</h2>
+            <ul>
+              <li>サイト全体にアクセスパスワード画面を追加。</li>
+              <li>パスワードを更新し、公開側の古い設定が残らないように反映を調整。</li>
+              <li>パスワード入力欄に表示・非表示の切替ボタンを追加。</li>
+              <li>クイズ画面の和風表示を調整。</li>
+              <li>この更新履歴ページを追加し、今後の変更をここへ追記する運用に変更。</li>
+            </ul>
+          </div>
+        </article>
+
+        <article class="update-entry">
+          <div class="update-date">
+            <time datetime="2026-07-28">2026.07.28</time>
+            <span>Portal</span>
+          </div>
+          <div class="update-body">
+            <h2>ピックアップとカード導線を調整</h2>
+            <ul>
+              <li>トップとアーカイブのピックアップ表示を、読み込みごとのランダム表示に変更。</li>
+              <li>アーカイブ画像をランダムで開くボタンを追加。</li>
+              <li>「最近追加」を固定的な「ピックアップ」表示へ変更。</li>
+              <li>ホームカードの「開く」ボタンの見た目を統一。</li>
+            </ul>
+          </div>
+        </article>
+
+        <article class="update-entry">
+          <div class="update-date">
+            <time datetime="2026-07-27">2026.07.27</time>
+            <span>Archive / Quiz / Chatbot</span>
+          </div>
+          <div class="update-body">
+            <h2>NETAサイトとして再構成</h2>
+            <ul>
+              <li>旧サイト一式をアーカイブとして管理できる構成に整理。</li>
+              <li>清盛クイズをNETAサイトの機能として統合し、問題データと和風UIを復元。</li>
+              <li>ワタスフーミンのチャットボットを統合し、正本仕様に合わせて回答優先順位、口調変換、共有学習、類似質問判定、履歴保存、アバター表示を復元。</li>
+              <li>スマホ版チャットを画面いっぱいで使えるように調整。</li>
+              <li>ポータル全体のデザインを刷新し、ギャラリー、アーカイブ、クイズ、チャットの導線を統一。</li>
+              <li>サイト全体にゴシック系Webフォントを適用。</li>
+            </ul>
+          </div>
+        </article>
+
+        <article class="update-entry">
+          <div class="update-date">
+            <time datetime="2026-03-31">2026.03.31</time>
+            <span>Archive</span>
+          </div>
+          <div class="update-body">
+            <h2>旧サイトデータを更新</h2>
+            <ul>
+              <li>2026年3月31日時点の旧サイト更新分を反映。</li>
+            </ul>
+          </div>
+        </article>
+
+        <article class="update-entry">
+          <div class="update-date">
+            <time datetime="2026-03-30">2026.03.30</time>
+            <span>Import</span>
+          </div>
+          <div class="update-body">
+            <h2>初期インポート</h2>
+            <ul>
+              <li>旧HTMLサイトをリポジトリに取り込み。</li>
+              <li>アーカイブ閲覧用の生成HTMLを追加。</li>
+            </ul>
+          </div>
+        </article>
+      </section>
+
+      <aside class="update-policy" aria-label="更新履歴の運用">
+        <section class="mini-panel">
+          <div class="mini-heading">
+            <h2>記録ルール</h2>
+            <span>運用</span>
+          </div>
+          <p>同じプロジェクト内でサイトを更新するときは、このページへ日付付きで変更内容を追記します。</p>
+        </section>
+
+        <section class="mini-panel">
+          <div class="mini-heading">
+            <h2>パスワード</h2>
+            <span>注意</span>
+          </div>
+          <p>パスワード関連の変更は履歴に残します。ただし、パスワード本文はサイトにも履歴にも書きません。</p>
+        </section>
+      </aside>
+    </div>
+  </main>
+</body>
+</html>

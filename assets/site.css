@@ -891,6 +891,110 @@ p {
   background: var(--panel-soft);
 }
 
+.updates-shell {
+  display: grid;
+  gap: 1rem;
+  width: min(var(--max-width), calc(100% - 1.5rem));
+  margin: 0 auto;
+  padding: 1rem 0 2.6rem;
+}
+
+.updates-hero {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--panel);
+  box-shadow: var(--shadow-soft);
+}
+
+.updates-hero p:not(.eyebrow) {
+  margin-top: 0.48rem;
+  color: var(--muted);
+}
+
+.updates-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 18rem;
+  gap: 1rem;
+  align-items: start;
+}
+
+.update-list {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.update-entry {
+  display: grid;
+  grid-template-columns: 10rem minmax(0, 1fr);
+  gap: 1rem;
+  padding: 1rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--panel);
+  box-shadow: var(--shadow-soft);
+}
+
+.update-date {
+  display: grid;
+  align-content: start;
+  gap: 0.35rem;
+  min-width: 0;
+}
+
+.update-date time {
+  color: var(--accent);
+  font-size: 1rem;
+  font-weight: 900;
+  line-height: 1.1;
+}
+
+.update-date span {
+  color: var(--muted);
+  font-size: 0.76rem;
+  font-weight: 800;
+  line-height: 1.35;
+}
+
+.update-body {
+  min-width: 0;
+}
+
+.update-body h2 {
+  margin-bottom: 0.52rem;
+  font-size: 1.08rem;
+}
+
+.update-body ul {
+  display: grid;
+  gap: 0.42rem;
+  margin: 0;
+  padding-left: 1.1rem;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.update-body li::marker {
+  color: var(--accent);
+}
+
+.update-policy {
+  position: sticky;
+  top: 0.8rem;
+  display: grid;
+  gap: 1rem;
+  min-width: 0;
+}
+
+.update-policy .mini-panel p {
+  color: var(--muted);
+  font-size: 0.88rem;
+}
+
 @media (max-width: 980px) {
   .portal-shell {
     grid-template-columns: 1fr;
@@ -904,7 +1008,7 @@ p {
 
   .rail-nav {
     display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(6.5rem, 1fr));
     gap: 0.35rem;
   }
 
@@ -921,6 +1025,14 @@ p {
 
   .feature-lane {
     grid-template-columns: 1fr;
+  }
+
+  .updates-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .update-policy {
+    position: static;
   }
 }
 
@@ -1014,6 +1126,23 @@ p {
 
   .workspace-panel {
     grid-template-columns: 1fr;
+  }
+
+  .updates-shell {
+    width: calc(100% - 1rem);
+    padding-top: 0.65rem;
+  }
+
+  .updates-hero {
+    display: grid;
+    grid-template-columns: 1fr;
+    padding: 0.85rem;
+  }
+
+  .update-entry {
+    grid-template-columns: 1fr;
+    gap: 0.65rem;
+    padding: 0.85rem;
   }
 }
 
