@@ -102,7 +102,7 @@ html.access-locked frameset {
 .access-field input {
   width: 100%;
   min-height: 2.8rem;
-  padding: 0.55rem 0.7rem;
+  padding: 0.55rem 2.95rem 0.55rem 0.7rem;
   border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 8px;
   background: #f7fafc;
@@ -114,6 +114,39 @@ html.access-locked frameset {
 .access-field input:focus {
   border-color: #8fb7ff;
   box-shadow: 0 0 0 3px rgba(143, 183, 255, 0.24);
+}
+
+.access-password-control {
+  position: relative;
+  display: grid;
+}
+
+.access-eye-button {
+  position: absolute;
+  top: 50%;
+  right: 0.38rem;
+  display: inline-grid;
+  place-items: center;
+  width: 2.05rem;
+  height: 2.05rem;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  background: transparent;
+  color: #46515d;
+  cursor: pointer;
+}
+
+.access-eye-button:hover,
+.access-eye-button:focus-visible {
+  border-color: rgba(49, 111, 209, 0.3);
+  background: rgba(49, 111, 209, 0.1);
+  color: #1f55ab;
+  outline: none;
+}
+
+.access-eye-button svg {
+  width: 1.18rem;
+  height: 1.18rem;
 }
 
 .access-remember {
@@ -238,6 +271,20 @@ html.access-locked frameset {
     return body;
   };
 
+  const eyeIcon = `
+    <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+      <path d="M2.6 12s3.3-6 9.4-6 9.4 6 9.4 6-3.3 6-9.4 6-9.4-6-9.4-6z" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      <circle cx="12" cy="12" r="2.7" fill="none" stroke="currentColor" stroke-width="2"/>
+    </svg>
+  `;
+
+  const eyeOffIcon = `
+    <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+      <path d="M2.6 12s3.3-6 9.4-6c2 0 3.7.62 5.1 1.46M21.4 12s-3.3 6-9.4 6c-2 0-3.7-.62-5.1-1.46" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M4 4l16 16M9.9 9.9a3 3 0 0 0 4.2 4.2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  `;
+
   const mountGate = () => {
     const body = ensureBody();
     const gate = document.createElement("main");
@@ -248,9 +295,12 @@ html.access-locked frameset {
         <p class="access-kicker">Private</p>
         <h1>ピザッツ</h1>
         <p>アクセスするにはパスワードを入力してください。</p>
-        <label class="access-field">
+        <label class="access-field" for="access-password">
           <span>パスワード</span>
-          <input type="password" name="password" autocomplete="current-password" required>
+          <span class="access-password-control">
+            <input id="access-password" type="password" name="password" autocomplete="current-password" required>
+            <button class="access-eye-button" type="button" data-toggle-password aria-label="パスワードを表示" title="パスワードを表示" aria-pressed="false">${eyeIcon}</button>
+          </span>
         </label>
         <label class="access-remember">
           <input type="checkbox" name="remember" checked>
@@ -265,7 +315,8 @@ html.access-locked frameset {
     const form = gate.querySelector("form");
     const input = gate.querySelector("input[name='password']");
     const remember = gate.querySelector("input[name='remember']");
-    const button = gate.querySelector("button");
+    const togglePassword = gate.querySelector("[data-toggle-password]");
+    const button = gate.querySelector(".access-button");
     const error = gate.querySelector(".access-error");
 
     if (!window.crypto?.subtle) {
@@ -273,6 +324,16 @@ html.access-locked frameset {
       button.disabled = true;
       return;
     }
+
+    togglePassword.addEventListener("click", () => {
+      const shouldShow = input.type === "password";
+      input.type = shouldShow ? "text" : "password";
+      togglePassword.innerHTML = shouldShow ? eyeOffIcon : eyeIcon;
+      togglePassword.setAttribute("aria-pressed", String(shouldShow));
+      togglePassword.setAttribute("aria-label", shouldShow ? "パスワードを隠す" : "パスワードを表示");
+      togglePassword.setAttribute("title", shouldShow ? "パスワードを隠す" : "パスワードを表示");
+      input.focus();
+    });
 
     form.addEventListener("submit", async (event) => {
       event.preventDefault();
