@@ -1,8 +1,8 @@
 (() => {
   const config = {
-    salt: "ZdnRo6b4Z3hyH5HPvD9UPYA2",
+    salt: "JiBrnxyhhZ6APr7srOvqDnw0",
     iterations: 210000,
-    hash: "DqEZac7oXX5VGTG_en5HTk3aKmwuc7uvGdqerSXb-rE",
+    hash: "-h4az5RGvLsqDZxX6rZ8rEyI4HwOrqsylAWn-U4xy0Y",
   };
 
   const storageKey = "neta-access-v1";
